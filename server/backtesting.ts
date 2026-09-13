@@ -11,32 +11,9 @@ export async function runHistoricalBacktest(
 ): Promise<BacktestSummary> {
   const records: BacktestRecord[] = [];
 
-  // Dummy fallback nifty/sector for historical backtest step to prevent network flood
-  const mockNifty = {
-    niftyPrice: 24000,
-    change: 0,
-    changePercent: 0,
-    trend: 'BULLISH' as const,
-    ema20: 23800,
-    ema50: 23500,
-    ema200: 22800,
-    rsi: 58,
-    momentum: 'Positive',
-    regime: 'BULLISH' as const,
-    confirmationStatus: 'STRONG' as const,
-  };
-
-  const mockSector = {
-    sectorName: 'NSE Benchmark',
-    sectorIndexSymbol: '^NSEI',
-    sectorPrice: 24000,
-    sectorChangePercent: 0.5,
-    sectorTrend: 'BULLISH' as const,
-    sectorMomentum: 65,
-    stockRelativeStrengthVsSector: 1.0,
-    sectorRelativeStrengthVsNifty: 0.5,
-    confirmation: 'STRONG' as const,
-  };
+  // Fetch real historical NIFTY benchmark data once
+  const niftyHist = await dataProvider.getHistoricalData('^NSEI', 'daily', '1y');
+  const niftyCandles = niftyHist.candles || [];
 
   for (const sym of symbols.slice(0, 15)) {
     try {
@@ -58,13 +35,47 @@ export async function runHistoricalBacktest(
           ? ((entryPrice - windowCandles[windowCandles.length - 2].close) / windowCandles[windowCandles.length - 2].close) * 100
           : 0;
 
+        // Correlate with real NIFTY candle around the same timestamp or relative index
+        const niftyIdx = Math.min(t, niftyCandles.length - 1);
+        const niftyCandle = niftyCandles[niftyIdx];
+        const niftyPrice = niftyCandle?.close || entryPrice;
+        const prevNiftyCandle = niftyIdx > 0 ? niftyCandles[niftyIdx - 1] : niftyCandle;
+        const niftyChange = niftyCandle && prevNiftyCandle ? niftyCandle.close - prevNiftyCandle.close : 0;
+        const niftyChangePercent = prevNiftyCandle && prevNiftyCandle.close > 0 ? (niftyChange / prevNiftyCandle.close) * 100 : 0;
+
+        const historicalNifty = {
+          niftyPrice,
+          change: Math.round(niftyChange * 100) / 100,
+          changePercent: Math.round(niftyChangePercent * 100) / 100,
+          trend: (niftyChangePercent >= 0 ? 'BULLISH' : 'BEARISH') as 'BULLISH' | 'BEARISH',
+          ema20: indicators.ema20,
+          ema50: indicators.ema50,
+          ema200: indicators.ema200,
+          rsi: indicators.rsi14,
+          momentum: niftyChangePercent >= 0 ? 'Positive momentum' : 'Negative drift',
+          regime: (niftyChangePercent >= 0 ? 'BULLISH' : 'BEARISH') as 'BULLISH' | 'BEARISH',
+          confirmationStatus: 'STRONG' as const,
+        };
+
+        const historicalSector = {
+          sectorName: 'NSE Sector',
+          sectorIndexSymbol: '^NSEI',
+          sectorPrice: niftyPrice,
+          sectorChangePercent: niftyChangePercent,
+          sectorTrend: (niftyChangePercent >= 0 ? 'BULLISH' : 'BEARISH') as 'BULLISH' | 'BEARISH',
+          sectorMomentum: Math.min(100, Math.max(0, Math.round(indicators.rsi14))),
+          stockRelativeStrengthVsSector: Math.round((changePercent - niftyChangePercent) * 100) / 100,
+          sectorRelativeStrengthVsNifty: 0,
+          confirmation: 'STRONG' as const,
+        };
+
         const scoreResult = calculateStockScore(
           entryPrice,
           changePercent,
           indicators,
           patterns,
-          mockNifty,
-          mockSector
+          historicalNifty,
+          historicalSector
         );
 
         // Only record strong bullish or strong signals

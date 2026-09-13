@@ -62,7 +62,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
 
           {/* Live NIFTY 50 Ticker */}
-          {nifty && (
+          {nifty && nifty.niftyPrice > 0 && (
             <div className="hidden lg:flex items-center gap-2 pl-4 border-l border-slate-800">
               <div className="flex items-center gap-1.5 text-xs">
                 <span className="font-semibold text-slate-300">NIFTY 50:</span>
@@ -82,6 +82,20 @@ export const Navbar: React.FC<NavbarProps> = ({
               <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase border ${getNiftyColor(nifty.trend)}`}>
                 {nifty.trend}
               </span>
+              {(nifty as any).marketStatus && (
+                <span className={`px-2 py-0.5 rounded text-[10px] font-medium border flex items-center gap-1 ${
+                  (nifty as any).marketStatus === 'OPEN' 
+                    ? 'bg-emerald-950/60 text-emerald-400 border-emerald-800/60' 
+                    : (nifty as any).marketStatus === 'PRE_MARKET'
+                    ? 'bg-blue-950/60 text-blue-400 border-blue-800/60'
+                    : 'bg-slate-900 text-slate-400 border-slate-800'
+                }`}>
+                  <span className={`h-1.5 w-1.5 rounded-full ${
+                    (nifty as any).marketStatus === 'OPEN' ? 'bg-emerald-400 animate-pulse' : 'bg-slate-500'
+                  }`} />
+                  {(nifty as any).marketStatus === 'OPEN' ? 'Live NSE' : (nifty as any).marketStatus === 'WEEKEND' ? 'Weekend' : 'NSE Closed'}
+                </span>
+              )}
             </div>
           )}
         </div>

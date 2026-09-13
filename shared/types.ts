@@ -347,3 +347,17 @@ export interface UserProfile {
   email: string;
   avatar: string;
 }
+
+export const AVAILABLE_UNIVERSES = [
+  { id: 'nifty50', label: 'NIFTY 50' },
+  { id: 'nifty100', label: 'NIFTY 100' },
+  { id: 'nifty200', label: 'NIFTY 200' },
+  { id: 'nifty_bank', label: 'NIFTY Bank' },
+  { id: 'nifty_it', label: 'NIFTY IT' },
+  { id: 'nifty_auto', label: 'NIFTY Auto' },
+  { id: 'nifty_pharma', label: 'NIFTY Pharma' },
+  { id: 'nifty_fmcg', label: 'NIFTY FMCG' },
+  { id: 'nifty_metal', label: 'NIFTY Metal' },
+  { id: 'holdings', label: 'My Portfolio Holdings' },
+  { id: 'watchlist', label: 'My Watchlist' },
+] as const;

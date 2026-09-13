@@ -12,24 +12,25 @@ export interface SectorIndexInfo {
   name: string;
   symbol: string;
   yahooSymbol: string;
+  upstoxKey?: string;
 }
 
 export const SECTOR_INDICES: Record<string, SectorIndexInfo> = {
-  'Banking & Financials': { name: 'NIFTY Bank', symbol: 'BANKNIFTY', yahooSymbol: '^NSEBANK' },
-  'Financial Services': { name: 'NIFTY Fin Service', symbol: 'NIFTYFIN', yahooSymbol: '^CNXFIN' },
-  'Information Technology': { name: 'NIFTY IT', symbol: 'NIFTYIT', yahooSymbol: '^CNXIT' },
-  'Automobiles & Auto Components': { name: 'NIFTY Auto', symbol: 'NIFTYAUTO', yahooSymbol: '^CNXAUTO' },
-  'Pharmaceuticals & Healthcare': { name: 'NIFTY Pharma', symbol: 'NIFTYPHARMA', yahooSymbol: '^CNXPHARMA' },
-  'Fast Moving Consumer Goods': { name: 'NIFTY FMCG', symbol: 'NIFTYFMCG', yahooSymbol: '^CNXFMCG' },
-  'Metals & Mining': { name: 'NIFTY Metal', symbol: 'NIFTYMETAL', yahooSymbol: '^CNXMETAL' },
-  'Oil, Gas & Energy': { name: 'NIFTY Energy', symbol: 'NIFTYENERGY', yahooSymbol: '^CNXENERGY' },
-  'Power & Utilities': { name: 'NIFTY Energy', symbol: 'NIFTYENERGY', yahooSymbol: '^CNXENERGY' },
-  'Real Estate & Construction': { name: 'NIFTY Realty', symbol: 'NIFTYREALTY', yahooSymbol: '^CNXREALTY' },
-  'Infrastructure': { name: 'NIFTY Infra', symbol: 'NIFTYINFRA', yahooSymbol: '^CNXINFRA' },
-  'Telecommunications': { name: 'NIFTY Infra', symbol: 'NIFTYINFRA', yahooSymbol: '^CNXINFRA' },
-  'Consumer Discretionary': { name: 'NIFTY FMCG', symbol: 'NIFTYFMCG', yahooSymbol: '^CNXFMCG' },
-  'Chemicals': { name: 'NIFTY Commodities', symbol: 'NIFTYCOMM', yahooSymbol: '^CNXCOMMODITIES' },
-  'Public Sector Enterprises': { name: 'NIFTY PSE', symbol: 'NIFTYPSE', yahooSymbol: '^CNXPSE' },
+  'Banking & Financials': { name: 'NIFTY Bank', symbol: 'BANKNIFTY', yahooSymbol: '^NSEBANK', upstoxKey: 'NSE_INDEX|Nifty Bank' },
+  'Financial Services': { name: 'NIFTY Fin Service', symbol: 'NIFTYFIN', yahooSymbol: '^CNXFIN', upstoxKey: 'NSE_INDEX|Nifty Fin Service' },
+  'Information Technology': { name: 'NIFTY IT', symbol: 'NIFTYIT', yahooSymbol: '^CNXIT', upstoxKey: 'NSE_INDEX|Nifty IT' },
+  'Automobiles & Auto Components': { name: 'NIFTY Auto', symbol: 'NIFTYAUTO', yahooSymbol: '^CNXAUTO', upstoxKey: 'NSE_INDEX|Nifty Auto' },
+  'Pharmaceuticals & Healthcare': { name: 'NIFTY Pharma', symbol: 'NIFTYPHARMA', yahooSymbol: '^CNXPHARMA', upstoxKey: 'NSE_INDEX|Nifty Pharma' },
+  'Fast Moving Consumer Goods': { name: 'NIFTY FMCG', symbol: 'NIFTYFMCG', yahooSymbol: '^CNXFMCG', upstoxKey: 'NSE_INDEX|Nifty FMCG' },
+  'Metals & Mining': { name: 'NIFTY Metal', symbol: 'NIFTYMETAL', yahooSymbol: '^CNXMETAL', upstoxKey: 'NSE_INDEX|Nifty Metal' },
+  'Oil, Gas & Energy': { name: 'NIFTY Energy', symbol: 'NIFTYENERGY', yahooSymbol: '^CNXENERGY', upstoxKey: 'NSE_INDEX|Nifty Energy' },
+  'Power & Utilities': { name: 'NIFTY Energy', symbol: 'NIFTYENERGY', yahooSymbol: '^CNXENERGY', upstoxKey: 'NSE_INDEX|Nifty Energy' },
+  'Real Estate & Construction': { name: 'NIFTY Realty', symbol: 'NIFTYREALTY', yahooSymbol: '^CNXREALTY', upstoxKey: 'NSE_INDEX|Nifty Realty' },
+  'Infrastructure': { name: 'NIFTY Infra', symbol: 'NIFTYINFRA', yahooSymbol: '^CNXINFRA', upstoxKey: 'NSE_INDEX|Nifty Infra' },
+  'Telecommunications': { name: 'NIFTY Infra', symbol: 'NIFTYINFRA', yahooSymbol: '^CNXINFRA', upstoxKey: 'NSE_INDEX|Nifty Infra' },
+  'Consumer Discretionary': { name: 'NIFTY FMCG', symbol: 'NIFTYFMCG', yahooSymbol: '^CNXFMCG', upstoxKey: 'NSE_INDEX|Nifty FMCG' },
+  'Chemicals': { name: 'NIFTY Commodities', symbol: 'NIFTYCOMM', yahooSymbol: '^CNXCOMMODITIES', upstoxKey: 'NSE_INDEX|Nifty Commodities' },
+  'Public Sector Enterprises': { name: 'NIFTY PSE', symbol: 'NIFTYPSE', yahooSymbol: '^CNXPSE', upstoxKey: 'NSE_INDEX|Nifty PSE' },
 };
 
 // Universe of top NSE stocks with accurate sector classification
@@ -153,11 +154,31 @@ export function getUniverseList(universeId: string, customWatchlist: string[] = 
   if (normId === 'nifty500') {
     return NSE_UNIVERSE;
   }
+  if (normId === 'nifty_bank' || normId === 'bank') {
+    return NSE_UNIVERSE.filter((s) => s.sector === 'Banking & Financials' || s.sector === 'Financial Services');
+  }
+  if (normId === 'nifty_it' || normId === 'it') {
+    return NSE_UNIVERSE.filter((s) => s.sector === 'Information Technology');
+  }
+  if (normId === 'nifty_auto' || normId === 'auto') {
+    return NSE_UNIVERSE.filter((s) => s.sector === 'Automobiles & Auto Components');
+  }
+  if (normId === 'nifty_pharma' || normId === 'pharma') {
+    return NSE_UNIVERSE.filter((s) => s.sector === 'Pharmaceuticals & Healthcare');
+  }
+  if (normId === 'nifty_fmcg' || normId === 'fmcg') {
+    return NSE_UNIVERSE.filter((s) => s.sector === 'Fast Moving Consumer Goods');
+  }
+  if (normId === 'nifty_metal' || normId === 'metal') {
+    return NSE_UNIVERSE.filter((s) => s.sector === 'Metals & Mining');
+  }
   if (normId === 'watchlist') {
-    return NSE_UNIVERSE.filter((s) => customWatchlist.includes(s.symbol));
+    const list = customWatchlist.map((w) => w.toUpperCase());
+    return NSE_UNIVERSE.filter((s) => list.includes(s.symbol.toUpperCase()));
   }
   if (normId === 'holdings') {
-    return NSE_UNIVERSE.filter((s) => customHoldings.includes(s.symbol));
+    const list = customHoldings.map((h) => h.toUpperCase());
+    return NSE_UNIVERSE.filter((s) => list.includes(s.symbol.toUpperCase()));
   }
   return NSE_UNIVERSE.filter((s) => s.isNifty50);
 }

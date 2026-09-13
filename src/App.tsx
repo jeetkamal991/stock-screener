@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import {
   AlertRule,
+  AVAILABLE_UNIVERSES,
   BacktestSummary,
   Holding,
   NiftyMarketConfirmation,
@@ -18,17 +19,6 @@ import { SectorMomentumView } from './components/SectorMomentumView.tsx';
 import { BacktestView } from './components/BacktestView.tsx';
 import { AlertsView } from './components/AlertsView.tsx';
 import { StockDetailModal } from './components/StockDetailModal.tsx';
-
-const AVAILABLE_UNIVERSES = [
-  { id: 'nifty50', label: 'NIFTY 50' },
-  { id: 'nifty100', label: 'NIFTY 100' },
-  { id: 'nifty200', label: 'NIFTY 200' },
-  { id: 'nifty_bank', label: 'NIFTY Bank Universe' },
-  { id: 'nifty_it', label: 'NIFTY IT Universe' },
-  { id: 'nifty_auto', label: 'NIFTY Auto Universe' },
-  { id: 'holdings', label: 'My Portfolio Holdings' },
-  { id: 'watchlist', label: 'My Watchlist' },
-];
 
 export default function App() {
   const [currentUser, setCurrentUser] = useState<UserProfile>({
@@ -401,6 +391,7 @@ export default function App() {
             userHoldings={holdings}
             availableUniverses={AVAILABLE_UNIVERSES}
             availableSectors={availableSectors}
+            nifty={nifty}
           />
         )}
 

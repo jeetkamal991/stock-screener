@@ -41,6 +41,7 @@ interface ScannerViewProps {
   userHoldings: Holding[];
   availableUniverses: Array<{ id: string; label: string }>;
   availableSectors: string[];
+  nifty?: NiftyMarketConfirmation | null;
 }
 
 export const ScannerView: React.FC<ScannerViewProps> = ({
@@ -57,6 +58,7 @@ export const ScannerView: React.FC<ScannerViewProps> = ({
   userHoldings,
   availableUniverses,
   availableSectors,
+  nifty,
 }) => {
   // Local Filter & Sorting State
   const [selectedPreset, setSelectedPreset] = useState<ScannerPresetType | 'ALL'>('ALL');
@@ -307,6 +309,112 @@ export const ScannerView: React.FC<ScannerViewProps> = ({
           </button>
         </div>
       </div>
+
+      {/* NIFTY 50 Macro Confirmation & Market Status Card */}
+      {(() => {
+        const activeNifty = nifty || summary?.niftyStatus;
+        if (!activeNifty || activeNifty.niftyPrice <= 0) return null;
+        return (
+          <div className="rounded-xl border border-slate-800 bg-gradient-to-r from-slate-900 via-slate-900 to-slate-950 p-4 sm:p-5 shadow-lg">
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-3">
+              <div className="flex items-center gap-2.5">
+                <Activity className="h-5 w-5 text-indigo-400" />
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-sm font-bold text-white">NIFTY 50 Macro Regime Confirmation</h3>
+                    <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase border ${
+                      activeNifty.regime?.includes('BULLISH')
+                        ? 'bg-emerald-950/60 text-emerald-400 border-emerald-800/60'
+                        : activeNifty.regime?.includes('BEARISH')
+                        ? 'bg-rose-950/60 text-rose-400 border-rose-800/60'
+                        : 'bg-amber-950/60 text-amber-400 border-amber-800/60'
+                    }`}>
+                      {activeNifty.regime || 'NEUTRAL'}
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-400">{activeNifty.momentum}</p>
+                </div>
+              </div>
+
+              {/* IST Market Hours & Status */}
+              <div className="flex items-center gap-2.5 text-xs">
+                {(activeNifty as any).marketStatus && (
+                  <div className={`flex items-center gap-1.5 px-3 py-1 rounded-lg border font-medium ${
+                    (activeNifty as any).marketStatus === 'OPEN'
+                      ? 'bg-emerald-950/40 text-emerald-400 border-emerald-800/40'
+                      : (activeNifty as any).marketStatus === 'PRE_MARKET'
+                      ? 'bg-blue-950/40 text-blue-400 border-blue-800/40'
+                      : 'bg-slate-800/60 text-slate-300 border-slate-700/60'
+                  }`}>
+                    <span className={`h-2 w-2 rounded-full ${
+                      (activeNifty as any).marketStatus === 'OPEN' ? 'bg-emerald-400 animate-pulse' : 'bg-slate-500'
+                    }`} />
+                    <span>{(activeNifty as any).marketMessage || ((activeNifty as any).marketStatus === 'OPEN' ? 'Market Open' : 'Market Closed')}</span>
+                  </div>
+                )}
+                {(activeNifty as any).currentIstTime && (
+                  <span className="font-mono text-slate-400 hidden sm:inline">
+                    {(activeNifty as any).currentIstTime}
+                  </span>
+                )}
+                {(activeNifty as any).dataSource && (
+                  <span className="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-indigo-300 font-mono">
+                    {(activeNifty as any).dataSource}
+                  </span>
+                )}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 pt-3 text-xs">
+              <div>
+                <span className="text-[10px] text-slate-400 block">NIFTY 50 Price</span>
+                <div className="font-mono text-base font-bold text-white">
+                  ₹{activeNifty.niftyPrice.toLocaleString('en-IN', { maximumFractionDigits: 2 })}
+                </div>
+                <span className={`font-mono text-xs font-semibold ${activeNifty.change >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+                  {activeNifty.change >= 0 ? '+' : ''}{activeNifty.change.toFixed(2)} ({activeNifty.change >= 0 ? '+' : ''}{activeNifty.changePercent.toFixed(2)}%)
+                </span>
+              </div>
+
+              <div>
+                <span className="text-[10px] text-slate-400 block">RSI (14)</span>
+                <div className="font-mono text-base font-bold text-white">{activeNifty.rsi?.toFixed(1) || '—'}</div>
+                <span className="text-[10px] text-slate-400">{activeNifty.rsi >= 60 ? 'Bullish Range' : activeNifty.rsi <= 40 ? 'Bearish Range' : 'Neutral Range'}</span>
+              </div>
+
+              <div>
+                <span className="text-[10px] text-slate-400 block">EMA 20</span>
+                <div className="font-mono text-sm font-semibold text-slate-200">₹{activeNifty.ema20?.toFixed(1) || '—'}</div>
+                <span className={`text-[10px] font-mono ${activeNifty.niftyPrice > activeNifty.ema20 ? 'text-emerald-400' : 'text-rose-400'}`}>
+                  {activeNifty.niftyPrice > activeNifty.ema20 ? '▲ Above EMA20' : '▼ Below EMA20'}
+                </span>
+              </div>
+
+              <div>
+                <span className="text-[10px] text-slate-400 block">EMA 50</span>
+                <div className="font-mono text-sm font-semibold text-slate-200">₹{activeNifty.ema50?.toFixed(1) || '—'}</div>
+                <span className={`text-[10px] font-mono ${activeNifty.niftyPrice > activeNifty.ema50 ? 'text-emerald-400' : 'text-rose-400'}`}>
+                  {activeNifty.niftyPrice > activeNifty.ema50 ? '▲ Above EMA50' : '▼ Below EMA50'}
+                </span>
+              </div>
+
+              <div>
+                <span className="text-[10px] text-slate-400 block">EMA 200</span>
+                <div className="font-mono text-sm font-semibold text-slate-200">₹{activeNifty.ema200?.toFixed(1) || '—'}</div>
+                <span className={`text-[10px] font-mono ${activeNifty.niftyPrice > activeNifty.ema200 ? 'text-emerald-400' : 'text-rose-400'}`}>
+                  {activeNifty.niftyPrice > activeNifty.ema200 ? '▲ Major Uptrend' : '▼ Major Downtrend'}
+                </span>
+              </div>
+
+              <div>
+                <span className="text-[10px] text-slate-400 block">Market Confirmation</span>
+                <div className="font-semibold text-white mt-0.5">{activeNifty.confirmationStatus || 'ACTIVE'}</div>
+                <span className="text-[10px] text-slate-400">Macro filter alignment</span>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
 
       {/* Market Breadth & Summary Stat Bar */}
       {summary && (
