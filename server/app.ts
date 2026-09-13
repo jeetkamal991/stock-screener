@@ -35,16 +35,33 @@ export function createApp(): express.Express {
     next();
   });
 
-  // URL normalization: ensure Vercel rewrites to /market/* or /api/* all match /api/* routes
+  // URL normalization: ensure Vercel rewrites to /market/* or catch-all slugs all match /api/* routes
   app.use((req, res, next) => {
-    if (req.url && !req.url.startsWith('/api') && !req.url.startsWith('/@') && !req.url.startsWith('/src') && !req.url.startsWith('/node_modules')) {
+    // 1. If Vercel catch-all slug passed query params
+    const query = req.query as any;
+    if (query?.slug) {
+      const slugPath = Array.isArray(query.slug) ? query.slug.join('/') : String(query.slug);
+      req.url = `/api/${slugPath.replace(/^\//, '')}`;
+    } else if (query?.path) {
+      req.url = `/api/${String(query.path).replace(/^\//, '')}`;
+    } else if (req.headers['x-forwarded-uri']) {
+      const fwd = String(req.headers['x-forwarded-uri']);
+      if (fwd.startsWith('/api') && fwd !== '/api' && fwd !== '/api/') {
+        req.url = fwd;
+      }
+    } else if (req.url && !req.url.startsWith('/api') && !req.url.startsWith('/@') && !req.url.startsWith('/src') && !req.url.startsWith('/node_modules')) {
       req.url = `/api${req.url.startsWith('/') ? '' : '/'}${req.url}`;
     }
     next();
   });
 
-  // Root API route
-  app.get(['/api', '/api/index', '/api/'], (req, res) => {
+  // Root API route (only when hitting base /api, not subpaths)
+  app.get(['/api', '/api/index', '/api/'], (req, res, next) => {
+    // If a slug or subpath was intended, pass to next handlers
+    const query = req.query as any;
+    if (query?.slug || query?.path) {
+      return next();
+    }
     res.json({
       status: 'ok',
       service: 'Stock Screener API',
