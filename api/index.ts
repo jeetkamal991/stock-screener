@@ -1,4 +1,10 @@
 import 'dotenv/config';
-import { app } from '../server/app.ts';
+import { createApp } from '../server/app';
+import type { VercelRequest, VercelResponse } from '@vercel/node';
 
-export default app;
+const app = createApp();
+
+export default function handler(req: VercelRequest, res: VercelResponse) {
+  // Pass the request to the Express app
+  app(req, res);
+}
