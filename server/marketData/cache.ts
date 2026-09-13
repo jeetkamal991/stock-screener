@@ -69,6 +69,9 @@ export class MemoryCache {
 export const marketCache = new MemoryCache();
 
 // Clean cache every 5 minutes
-setInterval(() => {
+const cleanupInterval = setInterval(() => {
   marketCache.cleanExpired();
 }, 5 * 60 * 1000);
+if (cleanupInterval && typeof cleanupInterval.unref === 'function') {
+  cleanupInterval.unref();
+}

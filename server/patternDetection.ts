@@ -1,4 +1,4 @@
-import { DetectedPattern, OHLCV, TechnicalIndicators } from '../shared/types.ts';
+import type { DetectedPattern, OHLCV, TechnicalIndicators } from '../shared/types.ts';
 import { calculateEMA } from './technicalIndicators.ts';
 
 export function detectPatterns(

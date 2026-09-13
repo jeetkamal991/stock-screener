@@ -1,4 +1,4 @@
-import { AlertRule, Holding, StockScanResult, UserProfile, WatchlistItem } from '../shared/types.ts';
+import type { AlertRule, Holding, StockScanResult, UserProfile, WatchlistItem } from '../shared/types.ts';
 
 export interface UserDatabase {
   profile: UserProfile;

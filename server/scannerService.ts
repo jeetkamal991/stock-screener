@@ -1,4 +1,4 @@
-import {
+import type {
   Holding,
   NiftyMarketConfirmation,
   ScannerFilterOptions,
@@ -6,7 +6,7 @@ import {
   SectorConfirmation,
   StockScanResult,
 } from '../shared/types.ts';
-import { getStocksByUniverse, NSE_STOCKS, NSEStock } from './nseUniverse.ts';
+import { getStocksByUniverse, NSE_STOCKS, type NSEStock } from './nseUniverse.ts';
 import { marketDataProvider } from './marketData.ts';
 import { calculateAllTechnicalIndicators } from './technicalIndicators.ts';
 import { detectPatterns } from './patternDetection.ts';

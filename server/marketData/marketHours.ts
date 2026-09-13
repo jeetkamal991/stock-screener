@@ -1,4 +1,4 @@
-import { MarketStatus, MarketStatusInfo } from './types.ts';
+import type { MarketStatus, MarketStatusInfo } from './types.ts';
 
 // Standard NSE Trading Holidays (YYYY-MM-DD) for 2025 & 2026
 const NSE_HOLIDAYS_SET = new Set<string>([

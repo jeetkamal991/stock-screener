@@ -1,5 +1,5 @@
-import { NiftyMarketConfirmation, SectorConfirmation } from '../shared/types.ts';
-import { MarketDataProvider } from './marketData.ts';
+import type { NiftyMarketConfirmation, SectorConfirmation } from '../shared/types.ts';
+import type { MarketDataProvider } from './marketData.ts';
 import { calculateAllTechnicalIndicators } from './technicalIndicators.ts';
 import { SECTOR_INDICES } from './nseUniverse.ts';
 import { SymbolNormalizer } from './marketData/symbolNormalizer.ts';

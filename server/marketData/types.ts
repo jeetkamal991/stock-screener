@@ -1,4 +1,4 @@
-import { OHLCV } from '../../shared/types.ts';
+import type { OHLCV } from '../../shared/types.ts';
 
 export type MarketStatus = 'OPEN' | 'CLOSED' | 'PRE_MARKET' | 'HOLIDAY' | 'WEEKEND';
 

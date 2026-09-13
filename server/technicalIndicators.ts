@@ -1,4 +1,4 @@
-import { OHLCV, TechnicalIndicators } from '../shared/types.ts';
+import type { OHLCV, TechnicalIndicators } from '../shared/types.ts';
 
 // Helper: Standard Simple Moving Average series
 export function calculateSMA(data: number[], period: number): (number | null)[] {

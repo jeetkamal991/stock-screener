@@ -1,11 +1,11 @@
 import { BaseMarketDataProvider } from './baseProvider.ts';
-import {
+import type {
   HistoricalDataResult,
   MarketQuote,
   SectorDataResult,
 } from '../types.ts';
 import { SymbolNormalizer } from '../symbolNormalizer.ts';
-import { OHLCV } from '../../../shared/types.ts';
+import type { OHLCV } from '../../../shared/types.ts';
 import { SECTOR_INDICES } from '../../nseUniverse.ts';
 import { formatISTDateTime, getMarketStatus } from '../marketHours.ts';
 

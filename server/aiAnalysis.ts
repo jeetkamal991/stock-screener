@@ -1,5 +1,5 @@
 import { GoogleGenAI } from '@google/genai';
-import { AIAnalysisResult, StockScanResult } from '../shared/types.ts';
+import type { AIAnalysisResult, StockScanResult } from '../shared/types.ts';
 
 let aiClient: GoogleGenAI | null = null;
 

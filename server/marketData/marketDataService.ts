@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import {
+import type {
   HistoricalDataResult,
   MarketDataProvider,
   MarketQuote,

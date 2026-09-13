@@ -1,8 +1,8 @@
-import { BacktestRecord, BacktestSummary, OHLCV } from '../shared/types.ts';
+import type { BacktestRecord, BacktestSummary, OHLCV } from '../shared/types.ts';
 import { calculateAllTechnicalIndicators } from './technicalIndicators.ts';
 import { detectPatterns } from './patternDetection.ts';
 import { calculateStockScore } from './scoringEngine.ts';
-import { MarketDataProvider } from './marketData.ts';
+import type { MarketDataProvider } from './marketData.ts';
 
 export async function runHistoricalBacktest(
   symbols: string[],

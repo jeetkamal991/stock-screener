@@ -24,6 +24,34 @@ export function createApp(): express.Express {
   const app = express();
   app.use(express.json());
 
+  // CORS headers
+  app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+    if (req.method === 'OPTIONS') {
+      return res.status(200).end();
+    }
+    next();
+  });
+
+  // URL normalization: ensure Vercel rewrites to /market/* or /api/* all match /api/* routes
+  app.use((req, res, next) => {
+    if (req.url && !req.url.startsWith('/api') && !req.url.startsWith('/@') && !req.url.startsWith('/src') && !req.url.startsWith('/node_modules')) {
+      req.url = `/api${req.url.startsWith('/') ? '' : '/'}${req.url}`;
+    }
+    next();
+  });
+
+  // Root API route
+  app.get(['/api', '/api/index', '/api/'], (req, res) => {
+    res.json({
+      status: 'ok',
+      service: 'Stock Screener API',
+      timestamp: new Date().toISOString(),
+    });
+  });
+
   // Simple session tracking: defaults to 'user-1'
   let currentUserId = 'user-1';
 
@@ -302,6 +330,16 @@ export function createApp(): express.Express {
       },
       timestamp: new Date().toISOString(),
       environment: process.env.NODE_ENV || 'development',
+    });
+  });
+
+  // Central error handler
+  app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+    console.error('[API Error]:', err);
+    res.status(500).json({
+      status: 'error',
+      error: err?.message || 'Internal Server Error',
+      timestamp: new Date().toISOString(),
     });
   });
 

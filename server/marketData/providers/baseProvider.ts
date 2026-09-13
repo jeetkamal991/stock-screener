@@ -1,4 +1,4 @@
-import { HistoricalDataResult, MarketDataProvider, MarketQuote, SectorDataResult, StructuredMarketError } from '../types.ts';
+import type { HistoricalDataResult, MarketDataProvider, MarketQuote, SectorDataResult, StructuredMarketError } from '../types.ts';
 
 export abstract class BaseMarketDataProvider implements MarketDataProvider {
   abstract readonly name: string;

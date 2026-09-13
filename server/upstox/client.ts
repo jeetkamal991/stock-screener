@@ -1,5 +1,5 @@
 import type { OHLCV } from '../../shared/types.ts';
-import { UpstoxCandlesResponse, UpstoxMarketQuoteResponse, UpstoxQuoteItem } from './types.ts';
+import type { UpstoxCandlesResponse, UpstoxMarketQuoteResponse, UpstoxQuoteItem } from './types.ts';
 
 export class UpstoxClient {
   private readonly baseUrl = 'https://api.upstox.com';
