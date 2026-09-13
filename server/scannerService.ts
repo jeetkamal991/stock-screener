@@ -214,6 +214,13 @@ export class ScannerService {
 
       this.scanProgress.current = targetStocks.length;
 
+      if (results.length === 0) {
+        if (!marketDataProvider.isConfigured()) {
+          throw new Error('UPSTOX_ACCESS_TOKEN is missing. Please configure your Upstox Access Token in Vercel Environment Variables.');
+        }
+        throw new Error('Market data feed returned no candles. Please check if your Upstox token is valid and active.');
+      }
+
       // Sort results by AI Score descending
       results.sort((a, b) => b.score - a.score);
 

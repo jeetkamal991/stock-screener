@@ -48,6 +48,8 @@ export function createApp(): express.Express {
       if (fwd.startsWith('/api') && fwd !== '/api' && fwd !== '/api/') {
         req.url = fwd;
       }
+    } else if (req.url && !req.url.startsWith('/api') && (req.url.startsWith('/scanner') || req.url.startsWith('/health') || req.url.startsWith('/market') || req.url.startsWith('/user') || req.url.startsWith('/portfolio') || req.url.startsWith('/ai') || req.url.startsWith('/backtest'))) {
+      req.url = `/api${req.url}`;
     }
     next();
   });

@@ -101,7 +101,17 @@ export default function App() {
           refresh,
         }),
       });
-      if (!res.ok) throw new Error('Scanner API failure');
+      if (!res.ok) {
+        let msg = 'Scanner request encountered an error. Please retry.';
+        try {
+          const errData = await res.json();
+          if (errData?.message) msg = errData.message;
+          else if (errData?.error) msg = errData.error;
+        } catch {
+          msg = `Server error (${res.status}). Verify Upstox API credentials or network connection.`;
+        }
+        throw new Error(msg);
+      }
       const data = await res.json();
       setScanResults(data.results || []);
       setScanSummary(data.summary || null);
@@ -112,7 +122,7 @@ export default function App() {
       }
     } catch (err: any) {
       console.error('Scan error:', err);
-      showToast('Scanner request encountered an error. Please retry.');
+      showToast(err?.message || 'Scanner request encountered an error. Please retry.');
     } finally {
       setIsLoadingScan(false);
     }

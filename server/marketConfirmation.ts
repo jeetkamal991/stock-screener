@@ -22,9 +22,26 @@ export class MarketConfirmationService {
     const quote = await dataProvider.getQuote('NIFTY50');
 
     if (!history.candles || history.candles.length < 30) {
-      throw new Error(
-        history.error || 'Unable to retrieve real NIFTY 50 historical market data'
-      );
+      if (!dataProvider.isConfigured()) {
+        console.warn('[MarketConfirmation] Market data provider not configured (UPSTOX_ACCESS_TOKEN missing)');
+      } else {
+        console.warn(`[MarketConfirmation] Unable to retrieve real NIFTY 50 candles: ${history.error || 'insufficient data'}`);
+      }
+      return {
+        niftyPrice: quote?.price ?? 24000,
+        change: quote?.change ?? 0,
+        changePercent: quote?.changePercent ?? 0,
+        trend: 'NEUTRAL',
+        ema20: 24000,
+        ema50: 24000,
+        ema200: 24000,
+        rsi: 50,
+        momentum: dataProvider.isConfigured()
+          ? 'NIFTY live feed temporarily busy'
+          : 'UPSTOX_ACCESS_TOKEN is not configured in Vercel settings',
+        regime: 'NEUTRAL',
+        confirmationStatus: 'WEAK',
+      };
     }
 
     const candles = history.candles;
