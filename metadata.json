@@ -1,0 +1,6 @@
+{
+  "name": "NSE Portfolio Tracker & AI Stock Scanner",
+  "description": "Professional Indian stock portfolio tracker and algorithmic AI scanner for NSE and NIFTY stocks with technical indicators, pattern recognition, and backtesting.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
