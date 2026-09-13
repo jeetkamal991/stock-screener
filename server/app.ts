@@ -35,9 +35,8 @@ export function createApp(): express.Express {
     next();
   });
 
-  // URL normalization: ensure Vercel rewrites to /market/* or catch-all slugs all match /api/* routes
+  // URL normalization: ensure Vercel rewrites or catch-all slugs match /api/* routes
   app.use((req, res, next) => {
-    // 1. If Vercel catch-all slug passed query params
     const query = req.query as any;
     if (query?.slug) {
       const slugPath = Array.isArray(query.slug) ? query.slug.join('/') : String(query.slug);
@@ -49,8 +48,6 @@ export function createApp(): express.Express {
       if (fwd.startsWith('/api') && fwd !== '/api' && fwd !== '/api/') {
         req.url = fwd;
       }
-    } else if (req.url && !req.url.startsWith('/api') && !req.url.startsWith('/@') && !req.url.startsWith('/src') && !req.url.startsWith('/node_modules')) {
-      req.url = `/api${req.url.startsWith('/') ? '' : '/'}${req.url}`;
     }
     next();
   });
