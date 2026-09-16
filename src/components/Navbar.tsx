@@ -5,8 +5,10 @@ import {
   Bell,
   Briefcase,
   ChevronDown,
+  Database,
   Eye,
   Layers,
+  RotateCcw,
   Sparkles,
   TrendingUp,
   User,
@@ -17,10 +19,11 @@ interface NavbarProps {
   activeTab: 'scanner' | 'holdings' | 'watchlist' | 'sectors' | 'backtest' | 'alerts';
   setActiveTab: (tab: 'scanner' | 'holdings' | 'watchlist' | 'sectors' | 'backtest' | 'alerts') => void;
   currentUser: UserProfile;
-  allUsers: UserProfile[];
-  onSwitchUser: (userId: string) => void;
+  allUsers?: UserProfile[];
+  onSwitchUser?: (userId: string) => void;
   nifty: NiftyMarketConfirmation | null;
   unreadAlertsCount?: number;
+  onResetTestData?: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -31,6 +34,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onSwitchUser,
   nifty,
   unreadAlertsCount = 0,
+  onResetTestData,
 }) => {
   const [showUserDropdown, setShowUserDropdown] = useState(false);
 
@@ -186,11 +190,20 @@ export const Navbar: React.FC<NavbarProps> = ({
           </button>
         </nav>
 
-        {/* User Account & Switcher */}
-        <div className="relative flex items-center gap-3">
-          <div className="flex items-center gap-1.5 text-xs text-emerald-400 bg-emerald-950/40 border border-emerald-900/50 px-2.5 py-1 rounded-full">
+        {/* User Account & Persistence State */}
+        <div className="relative flex items-center gap-2 sm:gap-3">
+          {/* Storage Indicator */}
+          <div 
+            title="All portfolio holdings, watchlists, alerts, and scan results are saved in your browser localStorage for testing."
+            className="flex items-center gap-1.5 text-xs text-indigo-300 bg-indigo-950/50 border border-indigo-800/60 px-2.5 py-1 rounded-full cursor-help select-none"
+          >
+            <Database className="h-3 w-3 text-indigo-400" />
+            <span className="font-semibold text-[11px] hidden sm:inline">Browser Saved</span>
+          </div>
+
+          <div className="hidden sm:flex items-center gap-1.5 text-xs text-emerald-400 bg-emerald-950/40 border border-emerald-900/50 px-2.5 py-1 rounded-full">
             <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="font-medium text-[11px]">NSE Live Feed</span>
+            <span className="font-medium text-[11px]">NSE Active</span>
           </div>
 
           <div className="relative">
@@ -217,22 +230,40 @@ export const Navbar: React.FC<NavbarProps> = ({
             {showUserDropdown && (
               <div
                 id="user-dropdown-menu"
-                className="absolute right-0 mt-2 w-56 rounded-xl border border-slate-800 bg-slate-900 p-2 shadow-xl z-50 animate-in fade-in zoom-in-95 duration-100"
+                className="absolute right-0 mt-2 w-64 rounded-xl border border-slate-800 bg-slate-900 p-2 shadow-xl z-50 animate-in fade-in zoom-in-95 duration-100"
               >
                 <div className="px-3 py-2 border-b border-slate-800 text-xs">
                   <p className="font-semibold text-white">{currentUser.name}</p>
                   <p className="text-[11px] text-slate-400 truncate">{currentUser.email}</p>
                 </div>
 
+                {onResetTestData && (
+                  <div className="p-2 border-b border-slate-800">
+                    <button
+                      onClick={() => {
+                        setShowUserDropdown(false);
+                        onResetTestData();
+                      }}
+                      className="flex w-full items-center gap-2 rounded-lg bg-indigo-950/60 px-3 py-2 text-xs font-semibold text-indigo-300 border border-indigo-800/40 hover:bg-indigo-900/60 transition"
+                    >
+                      <RotateCcw className="h-3.5 w-3.5 text-indigo-400" />
+                      <span>Reset Sample Test Data</span>
+                    </button>
+                    <p className="mt-1 text-[10px] text-slate-400 px-1">
+                      Restores default Reliance, HDFC, alerts & watchlist for fresh testing.
+                    </p>
+                  </div>
+                )}
+
                 <div className="pt-2">
                   <p className="px-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-400">
                     Switch Portfolio Account
                   </p>
-                  {allUsers.map((user) => (
+                  {(allUsers || [currentUser]).map((user) => (
                     <button
                       key={user.id}
                       onClick={() => {
-                        onSwitchUser(user.id);
+                        if (onSwitchUser) onSwitchUser(user.id);
                         setShowUserDropdown(false);
                       }}
                       className={`flex w-full items-center justify-between px-3 py-2 text-xs rounded-lg transition ${
